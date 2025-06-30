@@ -1,0 +1,68 @@
+clear;
+switchtolayout;
+#C Akhmadi 2025
+
+#variable set
+#ring parameter
+r=5.347e-6;     #radius in um
+w=0.4e-6;   #wg width in um
+g=0.05e-6;   #ring gap in um
+
+
+#simulation area
+sa_y=2*(r+(4*w)+g);
+
+setnamed("varFDTD","y span",sa_y);
+
+#analyzer parameter
+ax=5e-6;   #x location of analyzer
+
+#set ring resonator
+setnamed("ring resonator","radius",r);
+setnamed("ring resonator","base width",w);
+setnamed("ring resonator","gap",g);
+
+#set analyzer
+source_y=r+w+g;
+setnamed("varFDTD","y0",r);
+
+#set source
+setnamed("s_1300","y",source_y);
+setnamed("s_1300","x",-ax);
+
+setnamed("s_1500","y",source_y);
+setnamed("s_1500","x",-ax);
+
+setnamed("s_1550","y",source_y);
+setnamed("s_1550","x",-ax);
+
+#set drop monitor
+setnamed("drop","y",-source_y);
+setnamed("drop","x",-ax);
+
+#set through monitor
+setnamed("through","y",source_y);
+setnamed("through","x",ax);
+
+#set drop time monitor
+setnamed("t_drop","y",-source_y);
+setnamed("t_drop","x",-ax);
+
+#run simulation
+clear;
+run;
+
+#analisa 
+Drop=getresult("drop","T");
+T_drop=(Drop.T);
+Lambda=(Drop.lambda);
+Pass=getresult("through","T");
+T_pass=(Pass.T);
+Lambda=(Pass.lambda);
+
+#plot
+plot (Lambda*1e6,abs(T_drop),"wavelength (um)","T");
+holdon;
+plot (Lambda*1e6,T_pass);
+holdoff;
+legend("Drop","Through");
